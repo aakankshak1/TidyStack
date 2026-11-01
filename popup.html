@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tab Tamer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="title">Tab Tamer</h1>
+    </header>
+
+    <div class="fan-row" id="fanRow"></div>
+
+    <nav class="tabs-nav" id="tabsNav">
+      <button class="tab-btn active" data-tab="overview"><span class="dot"></span>Overview</button>
+      <button class="tab-btn" data-tab="duplicates"><span class="dot"></span>Duplicates</button>
+      <button class="tab-btn" data-tab="graveyard"><span class="dot"></span>Graveyard</button>
+      <button class="tab-btn" data-tab="settings"><span class="dot"></span>Settings</button>
+    </nav>
+
+    <main id="panels">
+      <section class="panel" data-panel="overview"></section>
+      <section class="panel hidden" data-panel="duplicates"></section>
+      <section class="panel hidden" data-panel="graveyard"></section>
+      <section class="panel hidden" data-panel="settings"></section>
+    </main>
+
+    <div class="spacer"></div>
+  </div>
+
+  <div class="undo-toast hidden" id="undoToast">
+    <span id="undoMessage"></span>
+    <button id="undoBtn">Undo</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

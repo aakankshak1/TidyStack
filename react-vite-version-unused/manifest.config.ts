@@ -1,0 +1,30 @@
+import { defineManifest } from "@crxjs/vite-plugin";
+
+export default defineManifest({
+  manifest_version: 3,
+  name: "Tab Tamer",
+  version: "2.0.0",
+  description:
+    "A calm way to manage too many tabs. Nothing is ever deleted without your say -- archive, search, and restore, all on your device.",
+  icons: {
+    16: "icons/icon16.png",
+    48: "icons/icon48.png",
+    128: "icons/icon128.png"
+  },
+  action: {
+    default_popup: "src/popup/index.html",
+    default_title: "Tab Tamer"
+  },
+  background: {
+    service_worker: "src/background/index.ts",
+    type: "module"
+  },
+  // Least-privilege permission set -- each one maps to a feature we explain in Settings.
+  permissions: [
+    "tabs",         // read tab titles/URLs to detect staleness & duplicates
+    "tabGroups",    // group tabs by topic
+    "storage",      // store your local settings + Graveyard archive, on-device only
+    "alarms",       // periodic local check (no network calls)
+    "notifications" // optional, user-togglable gentle nudges
+  ]
+});

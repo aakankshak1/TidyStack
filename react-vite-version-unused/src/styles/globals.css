@@ -1,0 +1,86 @@
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600;700;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* "Stormy morning" -- professional blue-gray scheme. */
+  --bg: 247 250 253;              /* #F7FAFD */
+  --surface: 255 255 255;          /* #FFFFFF */
+  --border: 217 231 247;           /* #D9E7F7 */
+  --text: 30 41 51;                /* #1E2933 */
+  --text-muted: 106 137 167;       /* #6A89A7 */
+
+  --accent: 56 73 89;              /* #384959 deep navy -- primary actions */
+  --accent-soft: 189 221 252;      /* #BDDDFC */
+  --accent-fg: 255 255 255;
+
+  --amber: 136 189 242;            /* #88BDF2 -- secondary marker (idle) */
+  --amber-soft: 224 238 252;       /* light tint of #88BDF2 */
+
+  --clay: 106 137 167;             /* #6A89A7 -- tertiary marker (duplicate) */
+  --clay-soft: 226 232 238;        /* light tint of #6A89A7 */
+}
+
+.dark {
+  --bg: 24 31 38;                  /* #181F26 */
+  --surface: 40 51 62;             /* #28333E */
+  --border: 58 74 89;              /* #384959 */
+  --text: 226 236 245;             /* #E2ECF5 */
+  --text-muted: 148 172 194;       /* #94ACC2 */
+
+  --accent: 136 189 242;           /* #88BDF2 -- pops on dark bg */
+  --accent-soft: 34 52 71;
+  --accent-fg: 15 20 26;
+
+  --amber: 189 221 252;            /* #BDDDFC */
+  --amber-soft: 34 48 66;
+
+  --clay: 148 172 194;             /* #94ACC2 */
+  --clay-soft: 40 54 68;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 396px;
+  color: rgb(var(--text));
+  background: rgb(var(--bg));
+  font-family: "Satoshi", system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgb(var(--accent-soft));
+}
+
+/* Visible focus states everywhere -- never remove outline, only restyle it. */
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thin, calm scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 8px;
+}

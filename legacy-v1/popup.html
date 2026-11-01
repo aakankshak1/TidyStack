@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tab Tamer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title">
+        <span class="logo">🗂️</span>
+        <div>
+          <h1>Tab Tamer</h1>
+          <p id="subtitle" class="subtitle">Loading…</p>
+        </div>
+      </div>
+      <button id="settingsToggle" class="icon-btn" title="Settings">⚙️</button>
+    </header>
+
+    <section id="settingsPanel" class="settings-panel hidden">
+      <label>
+        Notify when tabs exceed
+        <input type="number" id="thresholdInput" min="5" max="200" />
+      </label>
+      <label>
+        Consider stale after (hours)
+        <input type="number" id="staleHoursInput" min="0.5" step="0.5" min="0.5" />
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="autoGroupInput" />
+        Auto-group by topic when threshold is hit
+      </label>
+      <button id="saveSettings" class="primary-btn small">Save</button>
+    </section>
+
+    <section class="actions">
+      <button id="groupBtn" class="action-btn">🧩 Group by topic</button>
+      <button id="ungroupBtn" class="action-btn">↩️ Ungroup all</button>
+      <button id="refreshBtn" class="action-btn">🔄 Refresh</button>
+    </section>
+
+    <section class="stale-section">
+      <div class="stale-header">
+        <h2>Stale tabs</h2>
+        <div class="stale-bulk-actions">
+          <button id="bookmarkAllBtn" class="link-btn">Bookmark all &amp; close</button>
+          <button id="closeAllBtn" class="link-btn danger">Close all</button>
+        </div>
+      </div>
+      <div id="staleList" class="tab-list">
+        <p class="empty-state">Checking for stale tabs…</p>
+      </div>
+    </section>
+
+    <footer>
+      <span id="totalCount">–</span> tabs open
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
