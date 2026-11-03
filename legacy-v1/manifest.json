@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Tab Tamer",
+  "name": "TidyStack",
   "version": "1.0.0",
   "description": "Detects tab overload, groups tabs by topic, and helps you close or bookmark stale ones.",
   "permissions": [
@@ -16,7 +16,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Tab Tamer"
+    "default_title": "TidyStack"
   },
   "icons": {
     "16": "icons/icon16.png",

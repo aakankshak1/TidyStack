@@ -1,7 +1,7 @@
-// ---- Tab Tamer background service worker ----
+// ---- TidyStack (v1) background service worker ----
 
 const STORAGE_KEY = "tabLastActive";     // { [tabId]: timestampMs }
-const SETTINGS_KEY = "tabTamerSettings"; // { threshold, staleHours, autoGroup }
+const SETTINGS_KEY = "tidyStackSettings"; // { threshold, staleHours, autoGroup }
 
 const DEFAULT_SETTINGS = {
   threshold: 30,      // trigger notification once this many tabs are open
@@ -192,10 +192,10 @@ async function getOrCreateStaleFolder() {
     }
   }
   const dateLabel = new Date().toLocaleDateString();
-  const results = await chrome.bookmarks.search({ title: "Tab Tamer" });
+  const results = await chrome.bookmarks.search({ title: "TidyStack" });
   let root = results.find(r => !r.url);
   if (!root) {
-    root = await chrome.bookmarks.create({ title: "Tab Tamer" });
+    root = await chrome.bookmarks.create({ title: "TidyStack" });
   }
   const folder = await chrome.bookmarks.create({
     parentId: root.id,
@@ -214,11 +214,11 @@ async function checkThreshold() {
   if (totalCount >= settings.threshold) {
     const data = await chrome.storage.local.get("lastNotifiedCount");
     if (data.lastNotifiedCount !== totalCount) {
-      chrome.notifications.create("tab-tamer-threshold", {
+      chrome.notifications.create("tidystack-threshold", {
         type: "basic",
         iconUrl: "icons/icon128.png",
         title: "Whoa, that's a lot of tabs",
-        message: `You have ${totalCount} tabs open (${staleCount} look stale). Click the Tab Tamer icon to clean up.`,
+        message: `You have ${totalCount} tabs open (${staleCount} look stale). Click the TidyStack icon to clean up.`,
         priority: 1
       });
       await chrome.storage.local.set({ lastNotifiedCount: totalCount });
