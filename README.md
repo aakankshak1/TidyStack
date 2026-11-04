@@ -1,6 +1,6 @@
 # TidyStack
 
-A calm, privacy-first Chrome extension for tab management. Plain JavaScript, HTML, and CSS -- **no build step, no npm, no node_modules.** Chrome loads these files directly, exactly like any other extension.
+A cozy, pixel-art Chrome extension that makes tab management feel delightful. Organise, clean up and manage your tabs with seasonal themes and a little pixel companion.
 
 ## Load it
 
@@ -52,37 +52,9 @@ curl -L -o fonts/manrope.woff2 https://cdn.jsdelivr.net/npm/@fontsource-variable
 
 Until that file exists the popup quietly uses your system font. See `PRIVACY.md` for what the extension stores and why it needs each permission.
 
-## File map
-
-```
-manifest.json    -- MV3 manifest
-background.js    -- service worker: activity tracking, graveyard, duplicates, undo, grouping, notifications
-popup.html       -- popup structure
-popup.css        -- palettes for every theme + base styling
-world.css        -- Pip, pixel icons, particles, empty scenes, and the shared motion system
-themes.js        -- pixel-art scene engine, season-change wipe, theme switching
-pixel.js         -- pixel icon set, Pip sprites, empty-state scenes, notification picture (also used by background.js)
-critter.js       -- Pip's behaviour, particle effects, archive animation, seasonal sound effects
-popup.js         -- renders every panel, messaging, tab switching, undo toast
-fonts/           -- manrope.woff2 (see Typography above)
-PRIVACY.md       -- what is stored, and why each permission is needed
-icons/           -- extension icons
-```
-
-Storage keys start with `tidyStack...`. Data saved before the rename (settings and the Graveyard) is moved across automatically the first time this version runs; the `LEGACY_KEYS` block at the top of `background.js` does that and can be deleted in a later release.
-
-## Packaging for the Chrome Web Store
-
-Run `sh package.sh` to build `tidystack.zip` with only the files the extension needs. The `legacy-v1/` and `react-vite-version-unused/` folders are not included, and shouldn't be uploaded.
-
 ## Other folders here
 
 - `legacy-v1/` -- the very first vanilla-JS draft, kept for reference. Not used.
-- `react-vite-version-unused/` -- the React/Vite rebuild. Not used anymore. Safe to delete.
 
-## Roadmap (not built yet)
 
-- Focus Mode ("One Tab at a Time")
-- Context Switcher (named workspaces)
-- Tab Debt gamification
-- Weekly analytics (local-only)
+
