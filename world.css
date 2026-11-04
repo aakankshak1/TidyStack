@@ -1,0 +1,379 @@
+/* TidyStack "living world" layer: pixel icons, Pip, particles, and one consistent motion system.
+   Loaded after popup.css, so it only adds to it or fine-tunes it. */
+
+:root {
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease: var(--ease-pop);
+  --t-fast: 120ms;
+}
+
+/* Seasons move in chunky steps, like frames of an old game. Light and Dark stay smooth. */
+html.seasonal {
+  --ease: steps(2, end);
+}
+
+/* --- Pixel icons (recoloured by the text colour around them) --- */
+
+.pix {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: var(--pix) center / 100% 100% no-repeat;
+  mask: var(--pix) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+
+.field-label { display: inline-flex; align-items: center; gap: 7px; }
+.field-label .pix { color: rgb(var(--accent)); }
+
+/* --- Tab bar --- */
+
+.tabs-nav { padding: 0 8px; }
+.tab-btn {
+  position: relative;
+  gap: 4px;
+  padding: 11px 3px;
+  font-size: 13px;
+  transition: color var(--t-fast) var(--ease);
+}
+.tab-btn .pix { color: rgb(var(--text-muted)); transition: color var(--t-fast) var(--ease); }
+.tab-btn:hover .pix { color: rgb(var(--text)); }
+.tab-btn.active { color: rgb(var(--accent)); }
+.tab-btn.active .pix { color: rgb(var(--accent)); animation: iconBounce 420ms steps(5) 1; }
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  left: 3px; right: 3px; bottom: -1px;
+  height: 2px;
+  background: rgb(var(--accent));
+}
+.tab-btn.bounce .pix { animation: iconBounce 480ms steps(6) 1; color: rgb(var(--amber)); }
+
+@keyframes iconBounce {
+  0% { transform: translateY(0); }
+  35% { transform: translateY(-5px); }
+  70% { transform: translateY(1px); }
+  100% { transform: translateY(0); }
+}
+
+/* --- Panels slide in --- */
+
+.panel.panel-in { animation: panelIn 260ms steps(5) 1; }
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Buttons: one lift, one press, everywhere --- */
+
+.btn, .theme-swatch, .btn-link {
+  transition-property: transform, background-color, border-color, color, box-shadow;
+  transition-duration: var(--t-fast);
+  transition-timing-function: var(--ease);
+}
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+html.seasonal .btn:hover:not(:disabled) { transform: translateY(-2px); }
+.btn:active:not(:disabled), html.seasonal .btn:active:not(:disabled) { transform: translateY(1px) scale(0.98); }
+.btn:hover .pix { animation: iconWiggle 360ms steps(4) 1; }
+.btn-icon { width: 28px; padding: 0; }
+.btn-icon .pix { width: 18px; height: 18px; }
+.btn .pix { margin: 0 -1px; }
+
+@keyframes iconWiggle {
+  0% { transform: rotate(0); }
+  30% { transform: rotate(-8deg); }
+  65% { transform: rotate(8deg); }
+  100% { transform: rotate(0); }
+}
+
+.tab-row:hover { transform: translateY(-1px); }
+.tab-row:focus-within .tab-row-actions { opacity: 1; }
+.tab-row.launched { opacity: 0; transition: opacity 120ms steps(2); }
+
+/* --- Toggles squish and sparkle --- */
+
+.switch .track.pop .thumb { animation: thumbPop 260ms steps(4) 1; }
+@keyframes thumbPop {
+  0% { scale: 1 1; }
+  40% { scale: 1.4 0.75; }
+  100% { scale: 1 1; }
+}
+
+/* --- Toast: a message from the pixel world --- */
+
+.undo-toast { gap: 10px; z-index: 40; }
+.undo-toast span { flex: 1; }
+.undo-toast .t-pip {
+  display: block;
+  flex: none;
+  width: 26px;
+  height: 32px;
+  margin: -8px 0 -8px -4px;
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  image-rendering: pixelated;
+  animation: cFlip 0.6s steps(1) infinite;
+}
+.undo-toast.show { animation: toastIn 300ms steps(5) 1; }
+.undo-toast.leaving { animation: toastOut 160ms steps(3) 1 forwards; }
+@keyframes toastIn {
+  0% { transform: translateY(24px); opacity: 0; }
+  60% { transform: translateY(-4px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes toastOut { to { transform: translateY(16px); opacity: 0; } }
+
+/* --- Season-change wipe and celebration glow (header only) --- */
+
+.wipe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+html.seasonal .scene { transition: filter 260ms ease-out; }
+html.seasonal .scene.celebrate { filter: brightness(1.1) saturate(1.35); }
+
+/* --- Pip --- */
+
+.critter {
+  position: absolute;
+  z-index: 5;
+  right: 20px;
+  bottom: 6px;
+  width: 39px;
+  height: 48px;
+  cursor: pointer;
+  user-select: none;
+}
+html:not(.seasonal) .header { min-height: 58px; }
+html:not(.seasonal) .critter { right: 14px; bottom: -2px; }
+.critter:focus-visible { outline-offset: 2px; }
+
+.c-body {
+  display: block;
+  width: 39px;
+  height: 48px;
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  background-position: 0% 0;
+  image-rendering: pixelated;
+}
+.c-shadow {
+  position: absolute;
+  left: 6px; right: 6px; bottom: 5px;
+  height: 3px;
+  background: rgb(0 0 0 / 0.16);
+}
+
+@keyframes cBlink { 0%, 93% { background-position: 0% 0; } 94%, 100% { background-position: 100% 0; } }
+@keyframes cFlip { 0%, 49.99% { background-position: 0% 0; } 50%, 100% { background-position: 100% 0; } }
+@keyframes cShake { 0% { transform: translateX(-2px); } 50% { transform: translateX(2px); } }
+@keyframes cHop {
+  0% { transform: translateY(0); }
+  40%, 70% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+.critter[data-mood="idle"] .c-body { animation: cBlink 4.4s steps(1) infinite; }
+.critter[data-mood="happy"] .c-body { animation: cFlip 0.9s steps(1) infinite; }
+.critter[data-mood="cheer"] .c-body { animation: cFlip 0.46s steps(1) infinite; }
+.critter[data-mood="worry"] .c-body { animation: cFlip 0.6s steps(1) infinite; }
+.critter[data-mood="worry"][data-level="2"] .c-body { animation: cFlip 0.3s steps(1) infinite, cShake 0.3s steps(2) infinite; }
+.critter[data-mood="sleepy"] .c-body { animation: cFlip 2.2s steps(1) infinite; }
+.critter.hop { animation: cHop 0.42s steps(6) 1; }
+
+/* Speech bubble: sits to Pip's left so it never runs off the top of the popup. */
+.bubble {
+  position: absolute;
+  right: calc(100% + 6px);
+  bottom: 16px;
+  width: max-content;
+  max-width: 170px;
+  padding: 5px 8px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+  color: rgb(var(--text));
+  background: rgb(var(--surface));
+  box-shadow:
+    0 -2px 0 0 rgb(var(--accent)),
+    0 2px 0 0 rgb(var(--accent)),
+    -2px 0 0 0 rgb(var(--accent)),
+    2px 0 0 0 rgb(var(--accent));
+  animation: bubblePop 240ms steps(3) 1;
+  pointer-events: none;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  bottom: 6px;
+  width: 4px;
+  height: 6px;
+  background: rgb(var(--surface));
+  box-shadow: 0 -2px 0 rgb(var(--accent)), 0 2px 0 rgb(var(--accent)), 2px 0 0 rgb(var(--accent));
+}
+@keyframes bubblePop {
+  from { transform: translateY(6px) scale(0.85); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* --- Particles and the archive flight --- */
+
+#fxLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fxp { position: fixed; display: block; will-change: transform, opacity; }
+.fly-card {
+  position: fixed;
+  width: 60px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 5px;
+  background: rgb(var(--surface));
+  box-shadow: 0 0 0 2px rgb(var(--accent)), 2px 3px 0 2px rgb(var(--accent) / 0.25);
+  will-change: transform;
+}
+.fly-card img { width: 12px; height: 12px; image-rendering: pixelated; flex: none; }
+.fly-card i { display: block; height: 4px; flex: 1; background: rgb(var(--border)); }
+.fly-card i.s { flex: 0.5; background: rgb(var(--accent-soft)); }
+
+/* --- Empty-state scenes --- */
+
+.empty-scene { display: flex; flex-direction: column; align-items: center; padding: 14px 16px 10px; }
+.es-art {
+  position: relative;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  animation: esBob 2.4s steps(2) infinite alternate;
+}
+.empty-scene.nap .es-art { animation-duration: 3.4s; }
+@keyframes esBob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+.empty-scene .empty-state-text { margin-top: 10px; }
+
+.zz {
+  position: absolute;
+  top: 2px;
+  font-weight: 800;
+  font-size: 11px;
+  color: rgb(var(--text-muted));
+  opacity: 0;
+  animation: zFloat 2.4s steps(8) infinite;
+}
+.zz.z1 { left: 46px; }
+.zz.z2 { left: 54px; font-size: 13px; animation-delay: 0.8s; }
+.zz.z3 { left: 62px; font-size: 15px; animation-delay: 1.6s; }
+@keyframes zFloat {
+  0% { transform: translate(0, 10px); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(8px, -14px); opacity: 0; }
+}
+
+.tw {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: rgb(var(--amber));
+  clip-path: polygon(40% 0, 60% 0, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0 60%, 0 40%, 40% 40%);
+  animation: twk 1.6s steps(1) infinite;
+}
+.tw.t1 { left: 4px; top: 10px; }
+.tw.t2 { right: 2px; top: 22px; animation-delay: 0.5s; }
+.tw.t3 { left: 6px; top: 50px; animation-delay: 1s; }
+@keyframes twk { 0% { opacity: 1; } 50% { opacity: 0.15; } }
+
+/* --- Animated theme previews --- */
+
+.theme-swatch .thumb-wrap { position: relative; display: block; overflow: hidden; }
+.theme-swatch .prev { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.theme-swatch .prev i {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 3px;
+  opacity: 0;
+}
+.prev i:nth-child(1) { left: 8%;  --dl: -0.1s; }
+.prev i:nth-child(2) { left: 24%; --dl: -0.7s; }
+.prev i:nth-child(3) { left: 41%; --dl: -0.3s; }
+.prev i:nth-child(4) { left: 58%; --dl: -1s; }
+.prev i:nth-child(5) { left: 74%; --dl: -0.5s; }
+.prev i:nth-child(6) { left: 90%; --dl: -0.9s; }
+
+.prev-spring i { background: #ffc2d8; }
+.prev-autumn i { background: #e8833a; }
+.prev-winter i { background: #ffffff; }
+.prev-summer i { background: #fff6b0; top: auto; }
+.prev-summer i:nth-child(1) { top: 18%; }
+.prev-summer i:nth-child(2) { top: 55%; }
+.prev-summer i:nth-child(3) { top: 30%; }
+.prev-summer i:nth-child(4) { top: 70%; }
+.prev-summer i:nth-child(5) { top: 12%; }
+.prev-summer i:nth-child(6) { top: 48%; }
+
+.theme-swatch:hover .prev-spring i,
+.theme-swatch:focus-visible .prev-spring i,
+.theme-swatch[aria-pressed="true"] .prev-spring i,
+.theme-swatch:hover .prev-autumn i,
+.theme-swatch:focus-visible .prev-autumn i,
+.theme-swatch[aria-pressed="true"] .prev-autumn i,
+.theme-swatch:hover .prev-winter i,
+.theme-swatch:focus-visible .prev-winter i,
+.theme-swatch[aria-pressed="true"] .prev-winter i {
+  opacity: 1;
+  animation: prevFall 1.5s steps(8) var(--dl) infinite;
+}
+.theme-swatch:hover .prev-summer i,
+.theme-swatch:focus-visible .prev-summer i,
+.theme-swatch[aria-pressed="true"] .prev-summer i {
+  animation: prevTwinkle 1.2s steps(1) var(--dl) infinite;
+}
+@keyframes prevFall {
+  from { transform: translate(0, 0); }
+  50% { transform: translate(3px, 18px); }
+  to { transform: translate(-2px, 40px); }
+}
+@keyframes prevTwinkle {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.theme-swatch:hover { transform: translateY(-2px); }
+html.seasonal .theme-swatch:hover { transform: translateY(-2px); }
+
+/* --- Pixel companion switched off: Pip disappears everywhere --- */
+html.no-pip .critter,
+html.no-pip .t-pip,
+html.no-pip .bubble { display: none !important; }
+
+/* --- Title: just the letters, no box --- */
+html.seasonal .title,
+html .title {
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  padding: 0;
+}
+html.seasonal .title {
+  left: 12px;
+  top: 10px;
+  /* A hard pixel outline in the page colour keeps the letters readable over the scene without a box. */
+  text-shadow:
+    2px 0 0 rgb(var(--surface)), -2px 0 0 rgb(var(--surface)),
+    0 2px 0 rgb(var(--surface)), 0 -2px 0 rgb(var(--surface)),
+    2px 2px 0 rgb(var(--surface)), -2px -2px 0 rgb(var(--surface)),
+    2px -2px 0 rgb(var(--surface)), -2px 2px 0 rgb(var(--surface));
+}

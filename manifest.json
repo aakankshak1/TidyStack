@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tab Tamer",
-  "version": "2.0.0",
+  "name": "TidyStack",
+  "version": "2.4.0",
+  "minimum_chrome_version": "114",
   "description": "A calm way to manage too many tabs. Nothing is ever deleted without your say -- archive, search, and restore, all on your device.",
   "icons": {
     "16": "icons/icon16.png",
@@ -10,10 +11,14 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Tab Tamer"
+    "default_title": "TidyStack"
   },
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["tabs", "tabGroups", "storage", "alarms", "notifications"]
+  "permissions": ["tabs", "tabGroups", "storage", "unlimitedStorage", "alarms", "notifications", "favicon"],
+  "incognito": "not_allowed",
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'"
+  }
 }

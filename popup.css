@@ -1,9 +1,15 @@
-@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600;700;900&display=swap");
+/* Manrope is bundled locally (fonts/manrope.woff2) so opening the popup never contacts a font server.
+   Until the file is added it quietly falls back to the system font. */
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: local("Manrope"), url("fonts/manrope.woff2") format("woff2");
+}
 
 :root {
-  /* "Stormy morning" -- professional blue-gray scheme. */
+  /* Light -- the original "Stormy morning" blue-gray scheme. */
   --bg: 247 250 253;
   --surface: 255 255 255;
   --border: 217 231 247;
@@ -21,6 +27,7 @@
   --clay-soft: 226 232 238;
 }
 
+/* Dark -- original dark scheme. */
 html.dark {
   --bg: 24 31 38;
   --surface: 40 51 62;
@@ -39,6 +46,67 @@ html.dark {
   --clay-soft: 40 54 68;
 }
 
+/* Seasons -- each has its own palette to match its pixel scene. */
+html[data-theme="spring"] {
+  --bg: 246 250 238;
+  --surface: 255 255 252;
+  --border: 205 224 188;
+  --text: 38 52 36;
+  --text-muted: 88 110 80;
+  --accent: 58 118 68;
+  --accent-soft: 216 238 206;
+  --accent-fg: 255 255 255;
+  --amber: 240 160 190;
+  --amber-soft: 253 232 240;
+  --clay: 160 60 90;
+  --clay-soft: 250 228 232;
+}
+
+html[data-theme="summer"] {
+  --bg: 255 249 235;
+  --surface: 255 255 252;
+  --border: 240 218 170;
+  --text: 58 44 28;
+  --text-muted: 128 100 64;
+  --accent: 14 116 144;
+  --accent-soft: 206 238 245;
+  --accent-fg: 255 255 255;
+  --amber: 244 162 38;
+  --amber-soft: 254 238 205;
+  --clay: 170 62 36;
+  --clay-soft: 252 226 216;
+}
+
+html[data-theme="autumn"] {
+  --bg: 251 244 232;
+  --surface: 255 252 246;
+  --border: 230 208 176;
+  --text: 62 40 26;
+  --text-muted: 128 92 64;
+  --accent: 178 80 28;
+  --accent-soft: 248 222 196;
+  --accent-fg: 255 255 255;
+  --amber: 214 148 40;
+  --amber-soft: 250 236 205;
+  --clay: 150 58 44;
+  --clay-soft: 246 224 216;
+}
+
+html[data-theme="winter"] {
+  --bg: 238 246 252;
+  --surface: 252 254 255;
+  --border: 195 214 232;
+  --text: 28 42 62;
+  --text-muted: 84 108 136;
+  --accent: 44 96 168;
+  --accent-soft: 208 226 246;
+  --accent-fg: 255 255 255;
+  --amber: 120 200 220;
+  --amber-soft: 222 240 248;
+  --clay: 96 72 150;
+  --clay-soft: 232 226 244;
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -46,9 +114,11 @@ body {
   width: 396px;
   color: rgb(var(--text));
   background: rgb(var(--bg));
-  font-family: "Satoshi", system-ui, sans-serif;
+  font-family: "Manrope", system-ui, sans-serif;
   font-size: 14px;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 300ms cubic-bezier(0.4,0,0.2,1), color 300ms cubic-bezier(0.4,0,0.2,1);
 }
 
 .hidden { display: none !important; }
@@ -64,8 +134,11 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  /* Keep the scenery, drop the movement. */
+  .scene .fall, .scene .mote, .scene .twinkle { display: none; }
 }
 
 ::-webkit-scrollbar { width: 8px; }
@@ -75,6 +148,7 @@ body {
 /* --- Header --- */
 
 .header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -85,10 +159,10 @@ body {
 
 .title {
   margin: 0;
-  font-family: "Source Sans Pro", system-ui, sans-serif;
-  font-weight: 700;
+  font-family: "Manrope", system-ui, sans-serif;
+  font-weight: 800;
   font-size: 20px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1;
   color: rgb(var(--text));
 }
@@ -98,6 +172,99 @@ body {
   font-size: 13px;
   color: rgb(var(--text-muted));
 }
+
+/* --- Seasonal pixel scene (hidden for Light / Dark) --- */
+
+.scene { display: none; }
+
+html.seasonal .header {
+  display: block;
+  height: 112px;
+  padding: 0;
+  text-align: left;
+}
+html.seasonal .header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: rgb(var(--border));
+  z-index: 3;
+  pointer-events: none;
+}
+
+html.seasonal .scene {
+  display: block;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  background: rgb(var(--bg));
+  opacity: 0;
+}
+html.seasonal .scene.in { animation: sceneIn 500ms ease-out forwards; }
+
+html.seasonal .title {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 4;
+  padding: 6px 10px 7px;
+  font-size: 18px;
+  background: rgb(var(--surface) / 0.88);
+  box-shadow: inset 0 0 0 2px rgb(var(--border));
+}
+
+.layer { position: absolute; inset: 0; will-change: transform; }
+.cv { position: absolute; top: 0; image-rendering: pixelated; }
+.spr { position: absolute; display: block; image-rendering: pixelated; background-repeat: no-repeat; }
+.sway > .spr, .bob > .spr, .drift > .spr, .mote > .spr { position: relative; }
+
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--g) 0%, transparent 68%);
+  animation: glow 5s ease-in-out infinite alternate;
+}
+.tint { position: absolute; inset: 0; pointer-events: none; }
+.tint.warm {
+  background: linear-gradient(to top, rgb(120 50 10 / 0.22), rgb(255 160 60 / 0.06) 55%, transparent);
+  animation: glow 6s ease-in-out infinite alternate;
+}
+
+.fall { position: absolute; top: -16px; animation: fall var(--d) steps(76, end) var(--dl) infinite; }
+.sway { animation: sway var(--sd) steps(6, end) var(--sl) infinite alternate; }
+.drift { position: absolute; left: 0; animation: drift var(--d) steps(300, end) var(--dl) infinite; }
+.wander { position: absolute; animation: wander var(--d) steps(30, end) var(--dl) infinite alternate; }
+.bob { animation: bob var(--bd) steps(3, end) var(--bl) infinite alternate; }
+.sheet { animation: sheet 0.5s steps(2) infinite; }
+.twinkle { animation: twinkle var(--d) steps(1, end) var(--dl) infinite; }
+.nod { animation: nod var(--d) steps(1, end) var(--dl) infinite; }
+.mote { position: absolute; animation: rise var(--d) steps(14, end) var(--dl) infinite; }
+.wave { animation: waveShift var(--wd) steps(30, end) infinite; }
+.foam { animation: foam 2.2s steps(2, end) infinite alternate; }
+.shimmer { opacity: 0.3; animation: shimmer 0.9s steps(2, end) infinite alternate; }
+.aurora { mix-blend-mode: screen; opacity: 0.8; }
+.aurora.a1 { animation: auroraDrift 16s steps(20, end) infinite alternate, breathe 7s ease-in-out infinite alternate; }
+.aurora.a2 { animation: auroraDrift 22s steps(20, end) infinite alternate-reverse, breathe 9s ease-in-out infinite alternate-reverse; }
+
+@keyframes sceneIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes glow { from { opacity: 0.55; transform: scale(0.95); } to { opacity: 1; transform: scale(1.04); } }
+@keyframes fall { to { transform: translateY(var(--fy)); } }
+@keyframes sway { from { transform: translateX(calc(var(--sw) * -1)); } to { transform: translateX(var(--sw)); } }
+@keyframes drift { from { transform: translateX(-100px); } to { transform: translateX(500px); } }
+@keyframes wander { from { transform: translateX(0); } to { transform: translateX(var(--ax)); } }
+@keyframes bob { from { transform: translateY(0); } to { transform: translateY(var(--ay)); } }
+@keyframes sheet { from { background-position: 0 0; } to { background-position: calc(var(--sw) * -1) 0; } }
+@keyframes twinkle { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes nod { 0% { transform: translateX(0); } 50% { transform: translateX(2px); } }
+@keyframes rise { from { transform: translate(0, 0); opacity: 0.95; } to { transform: translate(var(--rx, 4px), -30px); opacity: 0; } }
+@keyframes waveShift { from { transform: translateX(0); } to { transform: translateX(-60px); } }
+@keyframes foam { from { transform: translateY(0); } to { transform: translateY(4px); } }
+@keyframes shimmer { from { transform: translateX(-2px); } to { transform: translateX(2px); } }
+@keyframes auroraDrift { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+@keyframes breathe { from { opacity: 0.45; } to { opacity: 0.9; } }
 
 /* --- Tab fan row --- */
 
@@ -111,13 +278,12 @@ body {
 .fan-row svg { flex-shrink: 0; overflow: visible; }
 
 .fan-count {
-  font-family: "JetBrains Mono", monospace;
   font-size: 14.5px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.2;
   color: rgb(var(--text));
 }
-.fan-count span { color: rgb(var(--text-muted)); }
+.fan-count span { color: rgb(var(--text-muted)); font-weight: 500; }
 
 .fan-summary {
   font-size: 12.5px;
@@ -130,28 +296,29 @@ body {
 .tabs-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
+  justify-content: space-between;
   border-bottom: 1px solid rgb(var(--border));
-  padding: 0 16px;
+  padding: 0 10px;
   margin-top: 12px;
 }
 
 .tab-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 11px 9px;
+  padding: 11px 5px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: rgb(var(--text-muted));
   transition: color 150ms cubic-bezier(0.4,0,0.2,1);
 }
 .tab-btn:hover { color: rgb(var(--text)); }
-.tab-btn.active { color: rgb(var(--text)); }
+.tab-btn.active { color: rgb(var(--text)); font-weight: 600; }
 .tab-btn .dot {
   width: 3px; height: 3px; border-radius: 999px;
   background: transparent;
@@ -170,7 +337,7 @@ body {
   border-radius: 6px;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 150ms cubic-bezier(0.4,0,0.2,1), border-color 150ms cubic-bezier(0.4,0,0.2,1);
   height: 32px;
@@ -203,7 +370,7 @@ body {
   border-radius: 6px;
   padding: 2px 6px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
 }
 .badge-clay { background: rgb(var(--clay-soft)); color: rgb(var(--clay)); }
@@ -222,13 +389,13 @@ body {
 .section-title {
   margin: 0;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: rgb(var(--text-muted));
 }
 .section-links { display: flex; gap: 12px; }
-.section-links button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12.5px; font-weight: 500; padding: 0; }
+.section-links button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 12.5px; font-weight: 600; padding: 0; }
 .link-accent { color: rgb(var(--accent)); }
 .link-clay { color: rgb(var(--clay)); }
 .section-links button:hover { text-decoration: underline; }
@@ -268,11 +435,11 @@ body {
 
 .tab-row img { width: 16px; height: 16px; flex-shrink: 0; border-radius: 3px; }
 
-.tab-row-info { min-width: 0; flex: 1; text-align: left; background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; }
+.tab-row-info { min-width: 0; flex: 1; text-align: left; background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; color: inherit; }
 .tab-row-info:disabled { cursor: default; }
-.tab-row-title { font-size: 14px; font-weight: 500; line-height: 1.2; color: rgb(var(--text)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tab-row-title { font-size: 14px; font-weight: 600; line-height: 1.2; color: rgb(var(--text)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tab-row-meta { font-size: 12.5px; line-height: 1.2; color: rgb(var(--text-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tab-row-meta .idle { font-family: "JetBrains Mono", monospace; font-size: 12px; margin-left: 4px; }
+.tab-row-meta .idle { font-size: 12px; margin-left: 4px; }
 
 .tab-row-actions { display: flex; gap: 4px; flex-shrink: 0; opacity: 0; transition: opacity 150ms; }
 .tab-row:hover .tab-row-actions { opacity: 1; }
@@ -284,7 +451,8 @@ body {
 .dup-card { border: 1px solid rgb(var(--border)); border-radius: 6px; padding: 8px; }
 .dup-card-head { display: flex; align-items: center; gap: 8px; }
 .dup-card-head img { width: 16px; height: 16px; border-radius: 3px; }
-.dup-card-head span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 500; }
+.dup-card-head span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; font-weight: 600; }
+.dup-card-head .badge { flex: none; }
 .dup-card-actions { display: flex; gap: 6px; margin-top: 8px; }
 
 /* --- Graveyard search --- */
@@ -316,7 +484,9 @@ body {
   border-radius: 6px; border: 1px solid rgb(var(--border));
   background: rgb(var(--surface)); padding: 4px 8px; font-size: 14px; font-family: inherit; color: rgb(var(--text));
 }
-.field-combo { display: flex; gap: 6px; }
+.field-combo { display: flex; align-items: center; gap: 6px; }
+.unit { font-size: 13px; color: rgb(var(--text-muted)); }
+.hint { margin: 0 0 4px; font-size: 12.5px; line-height: 1.4; color: rgb(var(--text-muted)); }
 .field-input-combo { width: 56px; }
 .field-text-block { padding: 8px 0; }
 .field-text-block label { display: block; margin-bottom: 4px; }
@@ -326,6 +496,20 @@ body {
 }
 .divider { border: none; border-top: 1px solid rgb(var(--border)); margin: 8px 0; }
 .save-row { display: flex; justify-content: flex-end; margin-top: 12px; }
+
+/* Theme picker */
+.theme-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: start; gap: 6px; margin-top: 2px; }
+.theme-swatch {
+  display: flex; flex-direction: column; gap: 5px; align-items: stretch;
+  padding: 4px 4px 5px;
+  border: 2px solid rgb(var(--border)); border-radius: 6px;
+  background: rgb(var(--surface)); color: rgb(var(--text-muted));
+  font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  transition: border-color 150ms cubic-bezier(0.4,0,0.2,1), background-color 150ms cubic-bezier(0.4,0,0.2,1), color 150ms;
+}
+.theme-swatch img { display: block; width: 100%; height: auto; aspect-ratio: 36 / 24; image-rendering: pixelated; }
+.theme-swatch:hover { border-color: rgb(var(--accent) / 0.45); color: rgb(var(--text)); }
+.theme-swatch[aria-pressed="true"] { border-color: rgb(var(--accent)); background: rgb(var(--accent-soft)); color: rgb(var(--text)); }
 
 /* Switch (custom toggle) */
 .switch { position: relative; display: inline-block; width: 32px; height: 18px; flex-shrink: 0; }
@@ -356,7 +540,75 @@ body {
   transition: all 200ms cubic-bezier(0.4,0,0.2,1);
 }
 .undo-toast span { font-size: 13.5px; color: rgb(var(--text)); }
-.undo-toast button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 500; color: rgb(var(--accent)); }
+.undo-toast button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 600; color: rgb(var(--accent)); }
 .undo-toast button:hover { text-decoration: underline; }
 
 .spacer { height: 56px; }
+
+/* =========================================================================
+   Seasonal themes -- pixel UI details.
+   Crisp 2px borders, stepped (notched) corners, hard bevels. Light / Dark
+   don't get any of this and keep their original soft look.
+   ========================================================================= */
+
+html.seasonal {
+  --pixel-clip: polygon(
+    0 2px, 2px 2px, 2px 0,
+    calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px,
+    100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%,
+    2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px)
+  );
+}
+
+html.seasonal :focus-visible { outline-offset: -2px; border-radius: 0; }
+
+html.seasonal .btn,
+html.seasonal .badge,
+html.seasonal .dup-card,
+html.seasonal .search-input,
+html.seasonal .field-input,
+html.seasonal .field-select,
+html.seasonal .field-text-input,
+html.seasonal .undo-toast,
+html.seasonal .theme-swatch,
+html.seasonal .tab-row,
+html.seasonal .title,
+html.seasonal .switch .track {
+  border-radius: 0;
+  clip-path: var(--pixel-clip);
+}
+
+html.seasonal .btn { border-width: 2px; }
+html.seasonal .btn:active { transform: translateY(1px); }
+html.seasonal .btn-default { box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.2); }
+html.seasonal .btn-outline { box-shadow: inset 0 -2px 0 rgb(var(--border)); }
+html.seasonal .btn-danger { border-color: transparent; }
+
+html.seasonal .dup-card,
+html.seasonal .search-input,
+html.seasonal .field-input,
+html.seasonal .field-select,
+html.seasonal .field-text-input,
+html.seasonal .undo-toast { border-width: 2px; }
+html.seasonal .undo-toast { box-shadow: none; }
+
+html.seasonal .tab-row { border-width: 2px; }
+html.seasonal .tab-row img { border-radius: 0; }
+html.seasonal .dup-card-head img { border-radius: 0; }
+
+html.seasonal .tab-btn.active .dot { border-radius: 0; }
+html.seasonal .tab-btn .dot { width: 4px; height: 4px; border-radius: 0; }
+html.seasonal .tabs-nav { border-bottom-width: 2px; }
+
+html.seasonal .switch { width: 34px; height: 20px; }
+html.seasonal .switch .track { background: rgb(var(--border)); }
+html.seasonal .switch input:checked + .track { background: rgb(var(--accent)); }
+html.seasonal .switch .thumb { top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 0; box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.12); }
+html.seasonal .switch input:checked + .track .thumb { transform: translateX(14px); }
+
+html.seasonal .theme-swatch { padding: 3px 3px 5px; }
+
+html.seasonal ::-webkit-scrollbar-thumb { border-radius: 0; }
+html.seasonal .tab-row,
+html.seasonal .dup-card,
+html.seasonal .search-input { transition-property: background-color, border-color, opacity, transform; }
