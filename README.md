@@ -52,9 +52,7 @@ curl -L -o fonts/manrope.woff2 https://cdn.jsdelivr.net/npm/@fontsource-variable
 
 Until that file exists the popup quietly uses your system font. See `PRIVACY.md` for what the extension stores and why it needs each permission.
 
-## Other folders here
 
-- `legacy-v1/` -- the very first vanilla-JS draft, kept for reference. Not used.
 
 
 
