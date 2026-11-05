@@ -543,7 +543,7 @@ html.seasonal .title {
 .undo-toast button { background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 600; color: rgb(var(--accent)); }
 .undo-toast button:hover { text-decoration: underline; }
 
-.spacer { height: 56px; }
+.spacer { height: 0; }
 
 /* =========================================================================
    Seasonal themes -- pixel UI details.
@@ -612,3 +612,17 @@ html.seasonal ::-webkit-scrollbar-thumb { border-radius: 0; }
 html.seasonal .tab-row,
 html.seasonal .dup-card,
 html.seasonal .search-input { transition-property: background-color, border-color, opacity, transform; }
+
+/* Favicon tiles: every site icon sits on a small tile, so white or black logos never disappear. */
+img.fav {
+  width: 22px; height: 22px; padding: 3px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgb(var(--border));
+}
+img.fav[data-tone="light"] {
+  background: #2b2620;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25);
+}
+html.seasonal img.fav { border-radius: 0; }

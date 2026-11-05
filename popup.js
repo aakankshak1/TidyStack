@@ -32,6 +32,33 @@ function faviconFor(url) {
   }
 }
 
+// Some sites serve a white icon (GitHub's dark-mode octocat, for one) that vanishes on a cream page.
+// So every icon sits on a small tile, and the tile colour is picked from the icon itself:
+// light icons get a dark tile, everything else gets a white one.
+function framedFavicon(img) {
+  img.classList.add("fav");
+  const pickTile = () => {
+    try {
+      const c = document.createElement("canvas");
+      c.width = c.height = 16;
+      const ctx = c.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, 16, 16);
+      const d = ctx.getImageData(0, 0, 16, 16).data;
+      let sum = 0;
+      let weight = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        const a = d[i + 3] / 255;
+        if (a < 0.2) continue;
+        sum += ((0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255) * a;
+        weight += a;
+      }
+      img.dataset.tone = weight > 0 && sum / weight > 0.62 ? "light" : "dark";
+    } catch { /* the tile just stays white */ }
+  };
+  img.addEventListener("load", pickTile);
+  if (img.complete && img.naturalWidth) pickTile();
+}
+
 function formatIdle(ms) {
   const hours = ms / (1000 * 60 * 60);
   if (hours < 1) return `${Math.max(1, Math.round(ms / 60000))}m`;
@@ -66,6 +93,7 @@ function buildTabRow({ title, url, meta, idleMs, onOpen, actions }) {
   row.className = "tab-row";
 
   const img = document.createElement("img");
+  framedFavicon(img);
   img.src = faviconFor(url);
   img.alt = "";
   img.onerror = () => { img.style.visibility = "hidden"; };
@@ -370,7 +398,9 @@ async function renderDuplicatesPanel() {
         <button class="btn btn-outline btn-sm" data-keep="oldest">Keep oldest</button>
       </div>
     `;
-    card.querySelector("img").onerror = (e) => { e.target.style.visibility = "hidden"; };
+    const favImg = card.querySelector("img");
+    framedFavicon(favImg);
+    favImg.onerror = (e) => { e.target.style.visibility = "hidden"; };
     card.querySelectorAll("[data-keep]").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const res = await send({ type: "RESOLVE_DUPLICATES", groups: [g.normalizedUrl], keep: btn.dataset.keep });
@@ -587,15 +617,11 @@ async function renderSettingsPanel() {
         <input class="field-text-input" type="text" id="exceptionsInput" maxlength="2000" placeholder="gmail.com, docs.google.com" value="${escapeHtml((settings.exceptionDomains || []).join(", "))}" />
       </div>
 
-      <div class="save-row">
-        <button class="btn btn-default btn-sm" id="saveSettingsBtn">Save changes</button>
-      </div>
     </div>
   `;
 
-  // Every change is saved the moment you make it, so a toggle or a number never gets lost just
-  // because the "Save changes" button wasn't pressed. The button stays as a visible confirmation.
-  const saveBtn = document.getElementById("saveSettingsBtn");
+  // Every change is saved the moment you make it, so there is no Save button to forget.
+  // If a save ever fails, Pip says so in a toast.
   let saveQueue = Promise.resolve();
 
   function collectSettings() {
@@ -615,9 +641,16 @@ async function renderSettingsPanel() {
 
   function saveNow() {
     // One save at a time, in the order they were made.
-    saveQueue = saveQueue.then(async () => {
+    saveQueue = saveQueue.catch(() => {}).then(async () => {
       const res = await send({ type: "SET_SETTINGS", settings: collectSettings() });
+      // Read the settings back, so "Saved" only appears if they really stuck.
+      let stuck = false;
       if (res && res.ok && res.settings) {
+        const back = await send({ type: "GET_SETTINGS" });
+        stuck = !!back && back.ok !== false &&
+          ["autoGroup", "playfulNotifications", "companion", "sound", "autoCleanup"].every((k) => back[k] === res.settings[k]);
+      }
+      if (stuck) {
         // Show what was actually saved (values are tidied up and kept in range).
         const s = res.settings;
         appSettings = s;
@@ -627,12 +660,9 @@ async function renderSettingsPanel() {
         applyTheme(s.theme);
         window.Critter?.configure(s);
         refreshHeader();
-        saveBtn.textContent = "Saved";
       } else {
-        saveBtn.textContent = "Couldn't save";
+        showError("Couldn't save that setting. Please try again.");
       }
-      clearTimeout(saveNow.resetTimer);
-      saveNow.resetTimer = setTimeout(() => { saveBtn.textContent = "Save changes"; }, 1500);
     });
     return saveQueue;
   }
@@ -646,7 +676,6 @@ async function renderSettingsPanel() {
     }
     if (e.target.matches("input, select")) saveNow();
   });
-  saveBtn.addEventListener("click", saveNow);
 
   // Picking a theme previews it right away and saves it.
   document.getElementById("themeGrid").addEventListener("click", (e) => {
