@@ -8,7 +8,7 @@ A cozy, pixel-art Chrome extension that makes tab management feel delightful. Or
 2. Toggle on **Developer mode** (top right)
 3. Click **Load unpacked**
 4. Select this folder (`TidyStack`)
-5. Done -- it just runs.
+5. Done,it just runs.
 
 To make a change later: edit the files directly, then click the reload icon on the TidyStack card in `chrome://extensions`.
 
